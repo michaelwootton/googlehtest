@@ -7,7 +7,7 @@ const _ = require('underscore');
 const PubSub = require('pubsub-js');
 PubSub.immediateExceptions = true;
 const { dialogflow, SignIn } = require('actions-on-google');
-const assistant = dialogflow({debug: true, clientId:'368886720564-ffahuvlrge7h59qks2n0t1o7lbujnodt.apps.googleusercontent.com',});
+const assistant = dialogflow({debug: true, clientId:'4819215140-h19dtif7hddobc9moak4g5jgdumu7kce.apps.googleusercontent.com',});
 var userlocale = '';
 var userId = '';
 
@@ -37,8 +37,8 @@ module.exports = (app) => {
         }   
         case 'pt': {
           // ...
-           url= 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492';
-           secret= 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6';
+           url= 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94';
+           secret= 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S';
            logger.info('Channel being used-PT : ', url);		  
           break;
         }  
@@ -111,14 +111,14 @@ module.exports = (app) => {
     logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
 // set initial channel to portuguese CHATBOT	
     var channeloc= {
-      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
-      secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
+      secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
     };
 // if portuguese - set channel to portuguese CHATBOT	
     if (userlocale === 'pt-BR') {
       channeloc= {
-        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
-        secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
+        secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
       };
       logger.info('Channel being used: ', channeloc);
     }
@@ -244,14 +244,14 @@ module.exports = (app) => {
     userName = userpayload.given_name;
 // set initial channel to portuguese CHATBOT	
     var channeloc= {
-      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
-      secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+      url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
+      secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
     };
 // if portuguese - set channel to portuguese CHATBOT	
     if (userlocale === 'pt-BR') {
       channeloc= {
-        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/291868e7-1eeb-490d-9fe5-c84362f34492',
-        secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+        url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
+        secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
       };
       logger.info('Channel being used: ', channeloc);
     }
