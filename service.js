@@ -81,7 +81,7 @@ module.exports = (app) => {
     if (userlocale.substring(0,2) === 'es') {userlocale = 'es-419'};
 
 
-    if (conv.user.profile.payload.given_name === '') {
+    if (typeof conv.user.profile.payload.given_name === 'undefined') {
 // If given_name is blank means that it is a new user, so will start a SIGN_IN process in Google to get users details	
       logger.info('Starting Signin proccess');
 // set initial channel to portuguese CHATBOT	      
