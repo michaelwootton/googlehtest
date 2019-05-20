@@ -87,19 +87,18 @@ module.exports = (app) => {
 // If given_name is blank means that it is a new user, so will start a SIGN_IN process in Google to get users details	
       logger.info('Starting Signin proccess');
 // set initial channel to portuguese CHATBOT	      
-      if ((userlocale.substring(0,2) === 'pt') | (didntWantToGiveUserId === '')) {
+      if ((userlocale.substring(0,2) === 'pt') | (typeof conv.user.storage.userId === 'undefined')) {
 	  
 //     If locale is portugues from  Brasil, start sign-in informing the reason
 //     Message means - To get you Google account details, like name and email, answer YES (Sim)
         conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
       }
-      else if ((userlocale.substring(0,2) === 'es') | (didntWantToGiveUserId === '')){
+      else if ((userlocale.substring(0,2) === 'es') | (typeof conv.user.storage.userId === 'undefined')){
 //     If locale is Spanish, start sign-in informing the reason
 //     Message means - To get you Google account details, like name and email, answer YES (Sim)
         conv.ask(new SignIn('Para tenermos los detalles de su cuenta de Google, como nombre y email, conteste Sí'));
       }  
       logger.info('Got out of Signin');
-      userId = 'anonymus';
     } else {
 // I have user given_name in message, so he already SIGNED IN and I have his name and email
 
@@ -226,7 +225,7 @@ module.exports = (app) => {
 //If Status is NOT OK then he didnt give permission to get his data
       userlocale = conv.user.locale;
       userId = 'anonymus';
-      didntWantToGiveUserId === '1';
+      
       if (userlocale.substring(0,2) === 'pt') {
         conv.ask('Olá, como vc não forneceu seus dados, vou ter que pedir durante o processo algumas informações. O que posso faar por vc ?');
       }
