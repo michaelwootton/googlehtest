@@ -10,7 +10,6 @@ const { dialogflow, SignIn } = require('actions-on-google');
 const assistant = dialogflow({debug: true, clientId:'4819215140-h19dtif7hddobc9moak4g5jgdumu7kce.apps.googleusercontent.com',});
 var userlocale = '';
 var userId = '';
-didntWantToGiveUserId = '';
 
 module.exports = (app) => {
   const logger = console;
@@ -18,7 +17,7 @@ module.exports = (app) => {
   OracleBot.init(app, {
     logger,
   });
-  // dados do webhook (Channel do PBCS em Portugues)
+  
 
   const webhook = new WebhookClient({
     // determine the channel config on incoming request from ODA
@@ -55,11 +54,11 @@ module.exports = (app) => {
   webhook
   .on(WebhookEvent.ERROR, err => logger.error('Error:', err.message))
   .on(WebhookEvent.MESSAGE_SENT, message => logger.info('Message to chatbot:', message));
-  // .on(WebhookEvent.MESSAGE_RECEIVED, message => logger.info('Message from chatbot:', message))
-
+ 
   // Need pub/sub storage
 
-  // https://my.ngrok.io/bot/message/es-ES <=== configure this in ODA per channel/locale
+  // https://my.ngrok.io/bot/message/es <=== configured this in ODA per channel/locale
+  // https://my.ngrok.io/bot/message/pt <=== configured this in ODA per channel/locale
   app.post('/bot/message/:locale', webhook.receiver((req, res) => {
     const { locale } = req.params;
     res.sendStatus(200);
@@ -71,31 +70,31 @@ module.exports = (app) => {
   }));
   assistant.intent('Default Welcome Intent', (conv) => {
     
-    logger.info('Welcome - Got query : ', conv.query);
-    logger.info('Welcome Got Conversation user Storage : ', JSON.stringify(conv.user.storage));
-    logger.info('Welcome  qual a conversation total : ', JSON.stringify(conv));
-//as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
     userlocale = conv.user.locale;
 
     logger.info('Welcome user profile payload: ', JSON.stringify(conv.user.profile));
     if (typeof conv.user.profile.payload === 'undefined') {
     // If given_name is blank means that it is a new user, so will start a SIGN_IN process in Google to get users details	
       logger.info('Starting Signin proccess');
-      logger.info('typeof conv.user.storage.userId: ',typeof conv.user.storage.userId);
-    // set initial channel to portuguese CHATBOT	      
       if ((userlocale.substring(0,2) === 'pt') && (typeof conv.user.storage.userId === 'undefined')) {
-         userId = 'anonymus';
-    //     If locale is portugues from  Brasil, start sign-in informing the reason
+         userId = self.randomIntInc(1000000, 9999999).toString();;
+    //     If locale is portuguese, start sign-in informing the reason
     //     Message means - To get you Google account details, like name and email, answer YES (Sim)
-        conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
+         conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
       }
       else if ((userlocale.substring(0,2) === 'es') && (typeof conv.user.storage.userId === 'undefined')){
-        userId = 'anonymus';
+         userId = self.randomIntInc(1000000, 9999999).toString();;
     //     If locale is Spanish, start sign-in informing the reason
     //     Message means - To get you Google account details, like name and email, answer YES (Sim)
-        conv.ask(new SignIn('Para tenermos los detalles de su cuenta de Google, como nombre y email, conteste Sí'));
+         conv.ask(new SignIn('Para tenermos los detalles de su cuenta de Google, como nombre y email, conteste Sí'));
       }  
-      logger.info('Got out of Signin');
+      else if ((userlocale.substring(0,2) === 'en') && (typeof conv.user.storage.userId === 'undefined')){
+        userId = self.randomIntInc(1000000, 9999999).toString();;
+   //     If locale is English, start sign-in informing the reason
+   //     Message means - To get you Google account details, like name and email, answer YES (Sim)
+        conv.ask(new SignIn('To get you Google account details, like name and email, answer YES'));
+     }  
+     logger.info('Got out of Signin');
     } else { 
       conv.ask('Oiii');
     }
@@ -114,7 +113,7 @@ module.exports = (app) => {
 
     logger.info('user profile payload: ', JSON.stringify(conv.user.profile));
     if (typeof conv.user.profile.payload === 'undefined') {
-       userId = 'anonymus'; 
+       userId = 'anonymous'; 
        userName = '';
     } else {
       userpayload = conv.user.profile.payload;
@@ -239,7 +238,7 @@ module.exports = (app) => {
     } else {
 //If Status is NOT OK then he didnt give permission to get his data
       userlocale = conv.user.locale;
-      userId = 'anonymus';
+      userId = 'anonymous';
       
       if (userlocale.substring(0,2) === 'pt') {
         conv.ask('Olá, como voce não forneceu seus dados, vou ter que pedir durante o processo algumas informações. O que posso fazer por voce ?');
