@@ -69,8 +69,38 @@ module.exports = (app) => {
      PubSub.publish(userId, req);
     
   }));
+  assistant.intent('Default Welcome Intent', (conv) => {
+    
+    logger.info('Welcome - Got query : ', conv.query);
+    logger.info('Welcome Got Conversation user Storage : ', JSON.stringify(conv.user.storage));
+    logger.info('Welcome  qual a conversation total : ', JSON.stringify(conv));
+//as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
+    userlocale = conv.user.locale;
 
-  
+    logger.info('Welcome user profile payload: ', JSON.stringify(conv.user.profile));
+    if (typeof conv.user.profile.payload === 'undefined') {
+    // If given_name is blank means that it is a new user, so will start a SIGN_IN process in Google to get users details	
+      logger.info('Starting Signin proccess');
+      logger.info('typeof conv.user.storage.userId: ',typeof conv.user.storage.userId);
+    // set initial channel to portuguese CHATBOT	      
+      if ((userlocale.substring(0,2) === 'pt') && (typeof conv.user.storage.userId === 'undefined')) {
+         userId = 'anonymus';
+    //     If locale is portugues from  Brasil, start sign-in informing the reason
+    //     Message means - To get you Google account details, like name and email, answer YES (Sim)
+        conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
+      }
+      else if ((userlocale.substring(0,2) === 'es') && (typeof conv.user.storage.userId === 'undefined')){
+        userId = 'anonymus';
+    //     If locale is Spanish, start sign-in informing the reason
+    //     Message means - To get you Google account details, like name and email, answer YES (Sim)
+        conv.ask(new SignIn('Para tenermos los detalles de su cuenta de Google, como nombre y email, conteste Sí'));
+      }  
+      logger.info('Got out of Signin');
+    } else { 
+      conv.ask('Oiii');
+    }
+  });
+
   assistant.intent('Default Fallback Intent', (conv) => {
     
     logger.info('Got query : ', conv.query);
@@ -84,33 +114,16 @@ module.exports = (app) => {
 
     logger.info('user profile payload: ', JSON.stringify(conv.user.profile));
     if (typeof conv.user.profile.payload === 'undefined') {
-// If given_name is blank means that it is a new user, so will start a SIGN_IN process in Google to get users details	
-      logger.info('Starting Signin proccess');
-      logger.info('typeof conv.user.storage.userId: ',typeof conv.user.storage.userId);
-// set initial channel to portuguese CHATBOT	      
-      if ((userlocale.substring(0,2) === 'pt') && (typeof conv.user.storage.userId === 'undefined')) {
-	       userId = 'anonymus';
-//     If locale is portugues from  Brasil, start sign-in informing the reason
-//     Message means - To get you Google account details, like name and email, answer YES (Sim)
-        conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
-      }
-      else if ((userlocale.substring(0,2) === 'es') && (typeof conv.user.storage.userId === 'undefined')){
-        userId = 'anonymus';
-//     If locale is Spanish, start sign-in informing the reason
-//     Message means - To get you Google account details, like name and email, answer YES (Sim)
-        conv.ask(new SignIn('Para tenermos los detalles de su cuenta de Google, como nombre y email, conteste Sí'));
-      }  
-      logger.info('Got out of Signin');
+       userId = conv.user.storage.userId 
+       userName = '';
     } else {
-// I have user given_name in message, so he already SIGNED IN and I have his name and email
-
-      logger.info('Account linking went ok, and his locale is: ', userlocale);
       userpayload = conv.user.profile.payload;
       userId = userpayload.sub;
       logger.info('I am in default Fallback - This is users User ID: ', userId);
       userName = userpayload.given_name;
       logger.info('I am in fefault Fallback - This is users given_name: ', userName);
-    }
+    }   
+
     logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
 // set initial channel to portuguese CHATBOT	
     var channeloc= {
