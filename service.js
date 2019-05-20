@@ -244,8 +244,7 @@ module.exports = (app) => {
   assistant.intent('Cancel', (conv) => {
     userlocale = conv.user.locale;
     userpayload = conv.user.profile.payload;
-    userId = userpayload.sub;
-    userName = userpayload.given_name;
+    
 // set initial channel to portuguese CHATBOT	
     var channeloc= {
       url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
