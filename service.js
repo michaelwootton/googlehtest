@@ -88,13 +88,14 @@ module.exports = (app) => {
       logger.info('Starting Signin proccess');
       logger.info('typeof conv.user.storage.userId: ',typeof conv.user.storage.userId);
 // set initial channel to portuguese CHATBOT	      
-      if ((userlocale.substring(0,2) === 'pt') | (typeof conv.user.storage.userId === 'undefined')) {
-	  
+      if ((userlocale.substring(0,2) === 'pt') | (conv.user.storage.userId)) {
+	       userID = 'anonymus';
 //     If locale is portugues from  Brasil, start sign-in informing the reason
 //     Message means - To get you Google account details, like name and email, answer YES (Sim)
      //   conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
       }
       else if ((userlocale.substring(0,2) === 'es') | (typeof conv.user.storage.userId === 'undefined')){
+        userID = 'anonymus';
 //     If locale is Spanish, start sign-in informing the reason
 //     Message means - To get you Google account details, like name and email, answer YES (Sim)
         conv.ask(new SignIn('Para tenermos los detalles de su cuenta de Google, como nombre y email, conteste Sí'));
