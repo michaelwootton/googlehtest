@@ -77,26 +77,34 @@ module.exports = (app) => {
     // If given_name is blank means that it is a new user, so will start a SIGN_IN process in Google to get users details	
       logger.info('Starting Signin proccess');
       if ((userlocale.substring(0,2) === 'pt') && (typeof conv.user.storage.userId === 'undefined')) {
-         userId = self.randomIntInc(1000000, 9999999).toString();;
+         userId = self.randomIntInc(1000000, 9999999).toString();
     //     If locale is portuguese, start sign-in informing the reason
     //     Message means - To get you Google account details, like name and email, answer YES (Sim)
          conv.ask(new SignIn('Para pegar os detalhes da sua conta do Google, como nome e email, responda Sim'));
       }
       else if ((userlocale.substring(0,2) === 'es') && (typeof conv.user.storage.userId === 'undefined')){
-         userId = self.randomIntInc(1000000, 9999999).toString();;
+         userId = self.randomIntInc(1000000, 9999999).toString();
     //     If locale is Spanish, start sign-in informing the reason
     //     Message means - To get you Google account details, like name and email, answer YES (Sim)
          conv.ask(new SignIn('Para tenermos los detalles de su cuenta de Google, como nombre y email, conteste Sí'));
       }  
       else if ((userlocale.substring(0,2) === 'en') && (typeof conv.user.storage.userId === 'undefined')){
-        userId = self.randomIntInc(1000000, 9999999).toString();;
+        userId = self.randomIntInc(1000000, 9999999).toString();
    //     If locale is English, start sign-in informing the reason
    //     Message means - To get you Google account details, like name and email, answer YES (Sim)
         conv.ask(new SignIn('To get you Google account details, like name and email, answer YES'));
      }  
      logger.info('Got out of Signin');
     } else { 
-      conv.ask('Oiii');
+        if (userlocale.substring(0,2) === 'pt') {
+          conv.ask('Oiii');
+        }
+        else if (userlocale.substring(0,2) === 'es') {
+          conv.ask('Hola');
+        }  
+        else if (userlocale.substring(0,2) === 'en') {
+          conv.ask('Hi');
+        }  
     }
   });
 
