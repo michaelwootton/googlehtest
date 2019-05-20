@@ -74,6 +74,7 @@ module.exports = (app) => {
   assistant.intent('Default Fallback Intent', (conv) => {
     
     logger.info('Got query : ', conv.query);
+    logger.info('Got Conversation user Storage : ', JSON.stringify(conv.user.storage));
     logger.info('qual a conversation total : ', JSON.stringify(conv));
 //as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
   
