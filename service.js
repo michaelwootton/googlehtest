@@ -69,7 +69,7 @@ module.exports = (app) => {
      PubSub.publish(userId, req);
     
   }));
-  assistant.intent('actions.intent.MAIN', (conv) => {
+  assistant.intent('Default Welcome Intent', (conv) => {
     
     logger.info('Welcome - Got query : ', conv.query);
     logger.info('Welcome Got Conversation user Storage : ', JSON.stringify(conv.user.storage));
