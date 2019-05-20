@@ -163,6 +163,7 @@ module.exports = (app) => {
         logger.info('Data from chatbot:', data);
         logger.info('Message from chatbot:', msg)
         logger.info('Conversa que veio do Google: ', conv)
+        conv.user.storage.userId = userId;
         var texto1 = '';
         var texto2 = '';
         texto1 = data.body.messagePayload.text;
