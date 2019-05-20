@@ -69,7 +69,7 @@ module.exports = (app) => {
      PubSub.publish(userId, req);
     
   }));
-  assistant.intent('Default Welcome Intent', (conv) => {
+  assistant.intent('actions.intent.MAIN', (conv) => {
     
     logger.info('Welcome - Got query : ', conv.query);
     logger.info('Welcome Got Conversation user Storage : ', JSON.stringify(conv.user.storage));
@@ -242,7 +242,7 @@ module.exports = (app) => {
       userId = 'anonymus';
       
       if (userlocale.substring(0,2) === 'pt') {
-        conv.ask('Olá, como vc não forneceu seus dados, vou ter que pedir durante o processo algumas informações. O que posso faar por vc ?');
+        conv.ask('Olá, como voce não forneceu seus dados, vou ter que pedir durante o processo algumas informações. O que posso fazer por voce ?');
       }
       else if (userlocale.substring(0,2) === 'es') {
         conv.ask('Hola, como no diste tus datos, voy a tener que pedir el proceso algunas informaciones, que puedo hacer para ayudar?');
