@@ -114,7 +114,7 @@ module.exports = (app) => {
 
     logger.info('user profile payload: ', JSON.stringify(conv.user.profile));
     if (typeof conv.user.profile.payload === 'undefined') {
-       userId = conv.user.storage.userId 
+       userId = 'anonymus'; 
        userName = '';
     } else {
       userpayload = conv.user.profile.payload;
