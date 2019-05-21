@@ -111,9 +111,8 @@ module.exports = (app) => {
   assistant.intent('Default Fallback Intent', (conv) => {
     
     logger.info('Got query : ', conv.query);
-    logger.info('Got Conversation user Storage : ', JSON.stringify(conv.user.storage));
-    logger.info('qual a conversation total : ', JSON.stringify(conv));
-//as the Chatbot has only resource Bundles for es-Es or es-419 (Mexico), transform to es-419
+
+//as the Chatbot has only resource Bundles for es-Es (Spain) or es-419 (Mexico), transform to es-419
   
     userlocale = conv.user.locale;
 
@@ -121,19 +120,18 @@ module.exports = (app) => {
 
     logger.info('user profile payload: ', JSON.stringify(conv.user.profile));
     if (typeof conv.user.profile.payload === 'undefined') {
-       userId = 'anonymous'; 
+       userId = conv.user.storage.userId; 
        userName = '';
     } else {
       userpayload = conv.user.profile.payload;
       userId = userpayload.sub;
       logger.info('I am in default Fallback - This is users User ID: ', userId);
       userName = userpayload.given_name;
-      logger.info('I am in fefault Fallback - This is users given_name: ', userName);
     }   
 
-    logger.info('Account Linking rolou no default fallback, dados de locale são: ', userlocale);
 // set initial channel to portuguese CHATBOT	
-    var channeloc= {
+// if locale qual English will use the Portuguese CHATBOT, this chatbot can treat English also.	
+var channeloc= {
       url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
       secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
     };
@@ -143,7 +141,6 @@ module.exports = (app) => {
         url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
         secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
       };
-      logger.info('Channel being used: ', channeloc);
     }
 // if Spanish - set channel to Spanish CHATBOT	
     else if (userlocale.substring(0,2) === 'es')  {
@@ -151,22 +148,8 @@ module.exports = (app) => {
         url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
         secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
       };
-      logger.info('Channel being used: ', channeloc);
     }  
-    
-    // const webhook = new WebhookClient({
-    //         // determine the channel config on incoming request from ODA
-    //   channel: (req) => {
-    //     // Promise is optional
-    //     return Promise.resolve({
-    //       url: channeloc.url, // channel url specific to the incoming ODA request
-    //       secret: channeloc.secret, // channel secret specific to the incomint ODA request
-    //     });
-    //   },
-    // });
-    
-
-    // 
+    logger.info('Channel being used: ', channeloc);
 
     return new Promise(function (resolve, reject) {
       const MessageModel = webhook.MessageModel();
@@ -179,36 +162,42 @@ module.exports = (app) => {
       };
       var messagePayload = MessageModel.textConversationMessage(conv.query);
       const message = _.assign({ userId, messagePayload }, additionalProperties);
-      logger.info('Message montado: ', JSON.stringify(message));
+      logger.info('Message to Chatbot: ', JSON.stringify(message));
       var treatandsendtoGoogle =  function (msg, data) {
-        logger.info('Data from chatbot:', data);
+        logger.info('Data from chatbot:', JSON.stringify(data.body.messagePayload));
         logger.info('Message from chatbot:', msg)
-        logger.info('Conversa que veio do Google: ', conv)
         conv.user.storage.userId = userId;
         var texto1 = '';
         var texto2 = '';
         texto1 = data.body.messagePayload.text;
           
-        logger.info('texto 1 antes de tratar actions : ', JSON.stringify(texto1));
+        logger.info('text 1 before treating actions : ', JSON.stringify(texto1));
         logger.info('actions : ', JSON.stringify(data.body.messagePayload.actions));
 // usually my messages sent from Chatbot have a text and some actions (options I give to the user)
         if (data.body.messagePayload.actions){
             texto2 = actionsToText(data.body.messagePayload.actions,texto1);
             texto1 = '';
         }
-        logger.info('texto 2 ', JSON.stringify(texto2));
+        logger.info('text 2 ', JSON.stringify(texto2));
         PubSub.unsubscribe(userId);
         conv.ask('<speak>'+texto1+texto2+'</speak>');
         resolve();
       };		
  	  
 	    PubSub.subscribe(userId, treatandsendtoGoogle)	  
-      logger.info('messagepayload : ', message.messagePayload);
-      logger.info('Additional Properties - profile : ', additionalProperties);      
       webhook.send(message, channeloc)
       .catch(err => {
         logger.info('Failed sending message to Bot');
-        conv.ask('Failed sending message to Bot.  Please review your bot configuration.');
+        if (userlocale.substring(0,2) === 'pt') {
+            conv.ask('Houve falha no envio da mensagem ao Chatbot. Por favor, revise a configuração do seu Chatbot.');
+        }
+    // if Spanish - send message of error in Spanish
+        else if (userlocale.substring(0,2) === 'es')  {
+            conv.ask('Tuvimos un error en el envio del mensaje al Chatbot. Por favor, revise la configuración de su Chatbot.');
+        }
+        else {
+            conv.ask('Failed sending message to Bot.  Please review your bot configuration.');
+        }
         reject(err);
         PubSub.unsubscribe(userId);
       })
@@ -219,7 +208,7 @@ module.exports = (app) => {
       // });
     })
   
-// Intent SIGN_IN is used when I call the even named SIGN_In in the previous intent, when I dont have users ID
+// Intent SIGN_IN is used when I call the Account Linking proccess in "Default Welcome Intent", when I dont have users ID
 // Account linking asks the user permission to use his data and returns a SIGN_IN Intent
 // If he answered YES to SIGN_IN REquest I have Signin.status = OK
 
@@ -229,9 +218,7 @@ module.exports = (app) => {
 //If Status is OK then he gave permission to get his data
     if (signin.status === 'OK') {
       userlocale = conv.user.locale;
-      logger.info('Account Linking went ok and his locale is: ', userlocale);
       userpayload = conv.user.profile.payload;
-      logger.info('This is the users given_name: ', JSON.stringify(conv.user.profile.payload.given_name));
       userId = userpayload.sub;
       logger.info('This is users userId: ', userId);
       userName = userpayload.given_name;
@@ -243,11 +230,13 @@ module.exports = (app) => {
       else if (userlocale.substring(0,2) === 'es') {
         conv.ask('Hola ' + userName + ', que puedo hacer para ayudar?');
       }
+      else if (userlocale.substring(0,2) === 'en') {
+        conv.ask('Hi ' + userName + ', what Can I do for you?');
+      }
     } else {
 //If Status is NOT OK then he didnt give permission to get his data
       userlocale = conv.user.locale;
-      userId = 'anonymous';
-      
+            
       if (userlocale.substring(0,2) === 'pt') {
         conv.ask('Olá, como voce não forneceu seus dados, vou ter que pedir durante o processo algumas informações. O que posso fazer por voce ?');
       }
@@ -264,9 +253,18 @@ module.exports = (app) => {
 
   assistant.intent('Cancel', (conv) => {
     userlocale = conv.user.locale;
-    userpayload = conv.user.profile.payload;
-    
-// set initial channel to portuguese CHATBOT	
+    logger.info('user profile payload: ', JSON.stringify(conv.user.profile));
+
+    if (typeof conv.user.profile.payload === 'undefined') {
+       userId = conv.user.storage.userId; 
+       userName = '';
+    } else {
+      userpayload = conv.user.profile.payload;
+      userId = userpayload.sub;
+      userName = userpayload.given_name;
+    }   
+    logger.info('I am in Cancel Intent - This is users User ID: ', userId);
+    // set initial channel to portuguese CHATBOT	
     var channeloc= {
       url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
       secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
