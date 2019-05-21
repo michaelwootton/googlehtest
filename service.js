@@ -1,5 +1,4 @@
 const OracleBot = require('@oracle/bots-node-sdk');
-const { messageModelUtil } = require('./lib/MessageModel/messageModelUtil.js');
 const { WebhookClient, WebhookEvent } = OracleBot.Middleware;
 const bodyParser = require('body-parser');
 const _ = require('underscore');
@@ -173,7 +172,7 @@ var channeloc= {
         texto1 = data.body.messagePayload.text;
           
         logger.info('text 1 before treating actions : ', JSON.stringify(texto1));
-        logger.info('actions : ', JSON.stringify(data.body.messagePayload.actions));
+        logger.info('channelExtensions : ', JSON.stringify(data.body.messagePayload.channelExtensions));
 // usually my messages sent from Chatbot have a text and some actions (options I give to the user)
         if (data.body.messagePayload.actions){
             texto2 = actionsToText(data.body.messagePayload.actions,texto1);
@@ -181,7 +180,12 @@ var channeloc= {
         }
         logger.info('text 2 ', JSON.stringify(texto2));
         PubSub.unsubscribe(userId);
-        conv.ask('<speak>'+texto1+texto2+'</speak>');
+        if (data.body.messagePayload.channelExtensionsend_conversation) {
+          conv.close('<speak>'+texto1+texto2+'</speak>');
+        }
+        else {
+          conv.ask('<speak>'+texto1+texto2+'</speak>');
+        }
         resolve();
       };		
  	  
