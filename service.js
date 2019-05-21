@@ -180,7 +180,7 @@ var channeloc= {
         }
         logger.info('text 2 ', JSON.stringify(texto2));
         PubSub.unsubscribe(userId);
-        if (data.body.messagePayload.channelExtensionsend_conversation) {
+        if (data.body.messagePayload.channelExtensions.end_conversation) {
           conv.close('<speak>'+texto1+texto2+'</speak>');
         }
         else {
