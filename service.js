@@ -3,6 +3,7 @@ const { messageModelUtil } = require('./lib/MessageModel/messageModelUtil.js');
 const { WebhookClient, WebhookEvent } = OracleBot.Middleware;
 const bodyParser = require('body-parser');
 const _ = require('underscore');
+const JSON = require('circular-json');
 // google
 const PubSub = require('pubsub-js');
 PubSub.immediateExceptions = true;
