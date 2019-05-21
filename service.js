@@ -164,7 +164,7 @@ var channeloc= {
       const message = _.assign({ userId, messagePayload }, additionalProperties);
       logger.info('Message to Chatbot: ', JSON.stringify(message));
       var treatandsendtoGoogle =  function (msg, data) {
-        logger.info('Data from chatbot:', JSON.stringify(data.body));
+        logger.info('Data from chatbot:', JSON.stringify(data));
         logger.info('Message from chatbot:', msg)
         conv.user.storage.userId = userId;
         var texto1 = '';
