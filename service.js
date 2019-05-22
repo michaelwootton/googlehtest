@@ -18,9 +18,16 @@ module.exports = (app) => {
     logger,
   });
   
-
+  // Use this if you only have one Chatbot being called
+  //const webhook = new WebhookClient({
+  //  channel: {
+  //    url: 'http://youraddreas.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/XXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  //    secret: 'BpZMnlY64tzVoBZHRtcgNvvs90ZE8lN6',
+  //  }
+  //});
   const webhook = new WebhookClient({
     // determine the channel config on incoming request from ODA
+    
     channel: (req) => {
       logger.info('Here', req.params);
       const { locale } = req.params;
@@ -131,7 +138,7 @@ module.exports = (app) => {
 
 // set initial channel to portuguese CHATBOT	
 // if locale qual English will use the Portuguese CHATBOT, this chatbot can treat English also.	
-var channeloc= {
+    var channeloc= {
       url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
       secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
     };
@@ -162,18 +169,13 @@ var channeloc= {
       };
       var messagePayload = MessageModel.textConversationMessage(conv.query);
       const message = _.assign({ userId, messagePayload }, additionalProperties);
-      logger.info('Message to Chatbot: ', JSON.stringify(message));
+      
       var treatandsendtoGoogle =  function (msg, data) {
-        logger.info('Data from chatbot:', JSON.stringify(data));
-        logger.info('Message from chatbot:', msg)
         conv.user.storage.userId = userId;
         var texto1 = '';
         var texto2 = '';
         texto1 = data.body.messagePayload.text;
-          
-        logger.info('text 1 before treating actions : ', JSON.stringify(texto1));
-        logger.info('channelExtensions : ', JSON.stringify(data.body.messagePayload.channelExtensions));
-// usually my messages sent from Chatbot have a text and some actions (options I give to the user)
+ // usually my messages sent from Chatbot have a text and some actions (options I give to the user)
         if (data.body.messagePayload.actions){
             texto2 = actionsToText(data.body.messagePayload.actions,texto1);
             texto1 = '';
@@ -207,11 +209,7 @@ var channeloc= {
         PubSub.unsubscribe(userId);
       })
     })      
-
-      // webhook.on(WebhookEvent.MESSAGE_RECEIVED, message => {
-      //   resolve(message);
-      // });
-    })
+  })
   
 // Intent SIGN_IN is used when I call the Account Linking proccess in "Default Welcome Intent", when I dont have users ID
 // Account linking asks the user permission to use his data and returns a SIGN_IN Intent
@@ -280,16 +278,15 @@ var channeloc= {
         url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/9638f435-ba7b-4d30-867c-81fa2d61fd94',
         secret: 'rPTELmhGUwJRVHkFB6FB3WDKz1PhQL0S',
       };
-      logger.info('Channel being used: ', channeloc);
-    }
+     }
 // if Spanish - set channel to Spanish CHATBOT	
     else if (userlocale.substring(0,2) === 'es') {
       channeloc = {
         url: 'http://2b2d3e3d.ngrok.io/connectors/v1/tenants/chatbot-tenant/listeners/webhook/channels/39b5e36b-dbdc-49f6-923a-ec8fc3b565b6',
         secret: 'CIhEYKrRu26ftxRysC1C3d0rn8sT2odo',
       };
-      logger.info('Channel being used: ', channeloc);
     }  
+    logger.info('Channel being used: ', channeloc);
     return new Promise(function (resolve, reject) {
       const MessageModel = webhook.MessageModel();
 
